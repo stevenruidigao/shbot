@@ -10,7 +10,7 @@ var logFile = fs.createWriteStream('log.log', {flags:'a'});
 createBots(config.hostname ? config.hostname : 'localhost', config.password);
 
 async function createBots(hostname, password) {
-	var bot1 = new classes.SHBot('bot1', password, 'http://', hostname, '8080');
+	var host = new classes.SHBot('bot1', password, 'http://', hostname, '8080');
 	var bot2 = new classes.SHBot('bot2', password, 'http://', hostname, '8080');
 	var bot3 = new classes.SHBot('bot3', password, 'http://', hostname, '8080');
 	var bot4 = new classes.SHBot('bot4', password, 'http://', hostname, '8080');
@@ -21,9 +21,10 @@ async function createBots(hostname, password) {
 	var bot9 = new classes.SHBot('bot9', password, 'http://', hostname, '8080');
 	var bot10 = new classes.SHBot('bot10', password, 'http://', hostname, '8080');
 
-	var bots = [host, bot2, bot3, bot4, bot5, bot6, bot7, bot8, bot9, host0];
+	var bots = [host, bot2, bot3, bot4, bot5, bot6, bot7, bot8, bot9, bot10];
 
 	for (bot of bots) {
+
 		await bot.socket;
 
 		bot.socket.on('toLobby', () => {
@@ -33,7 +34,15 @@ async function createBots(hostname, password) {
 		});
 
 		bot.socket.on('gameUpdate', (game, noChat) => {
+			
+		}
+
+		if (bot === host) break;
+
+		bot.socket.on('gameUpdate', (game, noChat) => {
 			bot.game = game;
+			utils.log(game, logFile);
+
 			if (game && game.gameState && game.gameState.isCompleted) {
 				bot.socket.emit('leaveGame', {
 					userName: bot.username,
@@ -53,8 +62,8 @@ async function createBots(hostname, password) {
 		setTimeout(async () => {
 			host.creatingGame = true;
 			await host.createNewGame('Bot Game', 5, 10, [], false, false, false, false,
-				true, false, false, true, true, false, false, 30,
-				false, false, true, false, false, false, false, true, false)
+				true, false, false, true, true, false, false, 1,
+				false, false, false, false, false, false, false, true, false)
 			host.creatingGame = false;
 		}, 150);
 	}
@@ -90,6 +99,6 @@ async function createBots(hostname, password) {
 		bot7.joinGame(host.uid, host.password);
 		bot8.joinGame(host.uid, host.password);
 		bot9.joinGame(host.uid, host.password);
-		host0.joinGame(host.uid, host.password);
+		bot10.joinGame(host.uid, host.password);
 	}, 300);
 }

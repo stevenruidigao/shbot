@@ -156,8 +156,129 @@ class SHBot {
 		});
 	}
 
-	static joinGame(bot, uid, password) {
-		bot.joinGame(uid, password);
+	async selectVote(vote) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedVoting', {
+			vote: vote,
+			uid: this.uid
+		});
+	}
+
+	async selectChancellor(index) {
+		this.socket = await this.socket;
+
+		this.socket.emit('presidentSelectedChancellor', {
+			chancellorIndex: index,
+			uid: this.uid
+		});
+	}
+
+	async selectPolicy(selection) {
+		if (this.game && this.game.publicPlayersState) {
+			currentPlayer = await this.game.publicPlayersState.find(player => player.userName === this.username);
+
+			if (currentPlayer.govermentStatus === 'isPresident') {
+				selectPresidentPolicy(selection);
+
+			} else if (currentPlayer.govermentStatus === 'isChancellor') {
+				selectChancellorPolicy(selection);
+			}
+		}
+	}
+
+	async selectPresidentPolicy(selection) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedPresidentPolicy', {
+			uid: this.uid,
+			selection: selection
+		});
+	}
+
+	async selectChancellorPolicy(selection) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedChancellorPolicy', {
+			uid: this.uid,
+			selection: selection
+		});
+	}
+
+	async investigate(index) {
+		this.socket = await this.socket;
+
+		socket.emit('selectParyMembershipInvestigate', {
+			playerIndex: index,
+			uid: this.uid
+		});
+	}
+
+	async investigateReverse(index) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectParyMembershipInvestigateReverse', {
+			playerIndex: index,
+			uid: this.uid
+		});
+	}
+
+	async specialElect(index) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedSpecialElection', {
+			playerIndex: index,
+			uid: this.uid
+		});
+	}
+
+	async execute(index) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedPlayerToExecute', {
+			playerIndex: index,
+			uid: this.uid
+		});
+	}
+
+	async voteVeto(vote) {
+		if (this.game && this.game.publicPlayersState) {
+			currentPlayer = await this.game.publicPlayersState.find(player => player.userName === this.username);
+
+			if (currentPlayer.govermentStatus === 'isChancellor') {
+				chancellorVoteVeto(vote);
+
+			} else if (currentPlayer.govermentStatus === 'isPresident') {
+				presidentVoteVeto(vote);
+			}
+		}
+	}
+
+	async chancellorVoteVeto(vote) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedChancellorVoteOnVeto', {
+			vote: vote,
+			uid: this.uid
+		});
+	}
+
+	async presidentVoteVeto(vote) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedPresidentVoteOnVeto', {
+			vote: vote,
+			uid: this.uid
+		});
+	}
+
+	async presidentVoteBurn(vote) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedPresidentVoteOnBurn', {
+			vote: vote,
+			uid: this.uid
+		});
 	}
 }
 
