@@ -23,24 +23,44 @@ async function createBots(hostname, password) {
 
 	var bots = [host, bot2, bot3, bot4, bot5, bot6, bot7, bot8, bot9, host0];
 
+	for (bot of bots) {
+		await bot.socket;
+
+		bot.socket.on('toLobby', () => {
+			setTimeout(() => {
+				for (bot of bots) bot.joinGame(host.uid, host.password);
+			}, 100);
+		});
+
+		bot.socket.on('gameUpdate', (game, noChat) => {
+			bot.game = game;
+			if (game && game.gameState && game.gameState.isCompleted) {
+				bot.socket.emit('leaveGame', {
+					userName: bot.username,
+					uid: bot.uid
+				});
+
+				setTimeout((bot) => {
+					for (bot of bots) bot.joinGame(host.uid, host.password);
+				}, 100, bot);
+			}
+		});
+	}
+
 	await host.socket;
 
 	host.createGame = () => {
 		setTimeout(async () => {
 			host.creatingGame = true;
 			await host.createNewGame('Bot Game', 5, 10, [], false, false, false, false,
-				true, false, true, true, true, false, false, 0.01,
-				false, false, true, false, false, false, false, false)
+				true, false, false, true, true, false, false, 30,
+				false, false, true, false, false, false, false, true, false)
 			host.creatingGame = false;
 		}, 150);
 	}
 
 	host.socket.on('toLobby', () => {
 		utils.logWithTime('Previous game deleted, creating new game...', logFile);
-		// host.socket.emit('leaveGame', {
-		//	userName: host.username,
-		//	uid: host.uid
-		// });
 
 		host.createGame();
 	});
@@ -50,7 +70,6 @@ async function createBots(hostname, password) {
 		if (game && game.gameState && game.gameState.isCompleted && !host.creatingGame) {
 			utils.logWithTime('Previous game ended, creating new game...', logFile);
 
-			host.creatingGame = true;
 			host.socket.emit('leaveGame', {
 				userName: host.username,
 				uid: host.uid
@@ -59,40 +78,6 @@ async function createBots(hostname, password) {
 			host.createGame();
 		}
 	});
-
-	for (i = 1; i < bots.length - 1; i ++) {
-		await bots[i].socket;
-
-		bots[i].socket.on('toLobby', () => {
-			// bots[i].socket.emit('leaveGame', {
-			//	userName: bots[i].username,
-			//	uid: bots[i].uid
-			// });
-
-			console.log(bots[i].username + ": " + host.uid);
-			setTimeout(() => {
-				console.log(bots[i].username + ": " + host.uid);
-				bots[i].joinGame(host.uid, host.password);
-			}, 100);
-		});
-
-		bots[i].socket.on('gameUpdate', (game, noChat) => {
-			bots[i].game = game;
-			if (game && game.gameState && game.gameState.isCompleted) {
-				bots[i].socket.emit('leaveGame', {
-					userName: bots[i].username,
-					uid: bots[i].uid
-				});
-
-				console.log(bots[i].username + ": " + host.uid);
-				setTimeout(() => {
-					console.log(bots[i].username + ": " + host.uid);
-					bots[i].joinGame(host.uid, host.password);
-				}, 100);
-			}
-		});
-	}
-
 
 	host.createGame();
 

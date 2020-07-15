@@ -40,8 +40,8 @@ class SHBot {
 			});
 		});
 
-		this.socket.on('gameUpdate', newGame => {
-			this.game = newGame;
+		this.socket.on('gameUpdate', game => {
+			this.game = game;
 		});
 
 		this.socket.on('gameSettings', gameSettings => {
