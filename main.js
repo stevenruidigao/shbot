@@ -30,12 +30,12 @@ async function createBots(hostname, password) {
 		bot.socket.on('toLobby', () => {
 			setTimeout(() => {
 				for (bot of bots) bot.joinGame(host.uid, host.password);
-			}, 100);
+			}, 400);
 		});
 
 		bot.socket.on('gameUpdate', (game, noChat) => {
 			
-		}
+		});
 
 		if (bot === host) break;
 
@@ -51,7 +51,7 @@ async function createBots(hostname, password) {
 
 				setTimeout((bot) => {
 					for (bot of bots) bot.joinGame(host.uid, host.password);
-				}, 100, bot);
+				}, 400, bot);
 			}
 		});
 	}
@@ -62,16 +62,16 @@ async function createBots(hostname, password) {
 		setTimeout(async () => {
 			host.creatingGame = true;
 			await host.createNewGame('Bot Game', 5, 10, [], false, false, false, false,
-				true, false, false, true, true, false, false, 1,
+				true, false, false, true, true, false, false, 0.1,
 				false, false, false, false, false, false, false, true, false)
 			host.creatingGame = false;
-		}, 150);
+		}, 300);
 	}
 
 	host.socket.on('toLobby', () => {
 		utils.logWithTime('Previous game deleted, creating new game...', logFile);
 
-		host.createGame();
+		if ((!host.game || !host.gameState || host.game.gameState.isCompleted) && !host.creatingGame) host.createGame();
 	});
 
 	host.socket.on('gameUpdate', (game, noChat) => {
@@ -100,5 +100,5 @@ async function createBots(hostname, password) {
 		bot8.joinGame(host.uid, host.password);
 		bot9.joinGame(host.uid, host.password);
 		bot10.joinGame(host.uid, host.password);
-	}, 300);
+	}, 500);
 }

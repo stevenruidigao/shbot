@@ -76,7 +76,7 @@ class SHBot {
 		});
 
 		this.socket.on('touChange', changeList => {
-			this.socket.emit('confirmTOU');
+			this.confirmTOU();
 		});
 
 		this.socket.on('updateSeatForUser', () => {
@@ -92,6 +92,39 @@ class SHBot {
 				}
 			}
 		});
+	}
+
+	async acknowledgeWarning() {
+		this.socket = await this.socket;
+
+		this.socket.emit('acknowledgeWarning');
+	}
+
+	async checkRestrictions() {
+		this.socket = await this.socket;
+
+		this.socket.emit('receiveRestrictions');
+	}
+
+	async checkWarnings() {
+		this.socket = await this.socket;
+
+		this.socket.emit('checkWarnings', this.username);
+	}
+
+	async claim(claim, claimType) {
+		this.socket = await this.socket;
+
+		this.socket.emit({
+			claim: claimType,
+			claimState, claim
+		})
+	}
+
+	async confirmTOU() {
+		this.socket = await this.socket;
+
+		this.socket.emit('confirmTOU');
 	}
 
 	async createNewGame(gameName, minPlayersCount, maxPlayersCount, excludedPlayerCount, eloSliderValue, customGameSettings, isTourny, isPrivate,
@@ -130,18 +163,140 @@ class SHBot {
 		});
 	}
 
-	async generalChat(message) {
+	async disconnect() {
+		this.socket = await this.socket;
+
+		this.socket.emit('disconnect');
+	}
+
+	async execute(index) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedPlayerToExecute', {
+			playerIndex: index,
+			uid: this.uid
+		});
+	}
+
+	async freezeGame() {
+		this.socket = await this.socket;
+
+		this.socket.emit('modFreezeGame', {
+			modName: this.username,
+			uid: this.uid
+		});
+	}
+
+	async gameChat(chat) {
+		this.socket = await this.socket;
+
+		this.socket.emit('addNewGameChat', {
+			chat: chat,
+			uid: this.uid,
+			userName: this.username
+		});
+	}
+
+	async generalChat(chat) {
 		this.socket = await this.socket;
 
 		this.socket.emit('addNewGeneralChat', {
-			username: this.username,
-			chat: message
+			chat: chat,
+			userName: this.username
 		});
 	}
 
 	async getGameInfo(uid) {
 		this.socket = await this.socket;
+
 		this.socket.emit('getGameInfo', uid);
+	}
+
+	async getGameList() {
+		this.socket = await this.socket;
+
+		this.socket.emit('getGameList');
+	}
+
+	async getGeneralChats() {
+		this.socket = await this.socket;
+
+		this.socket.emit('getGeneralChats');
+	}
+
+	async getPlayerNotes(seatedPlayers) {
+		this.socket = await this.socket;
+
+		this.socket.emit('getPlayerNotes', {
+			seatedPlayers: seatedPlayers,
+			userName: this.username
+		});
+	}
+
+	async getReplayGameChats(uid) {
+		this.socket = await this.socket;
+
+		this.socket.emit('getReplayGamechats', uid ? uid : this.uid);
+	}
+
+	async getUserGameSettings() {
+		this.socket = await this.socket;
+
+		this.socket.emit('getUserGameSettings');
+	}
+
+	async getUserList() {
+		this.socket = await this.socket;
+
+		this.socket.emit('sendUser');
+	}
+
+	async getUserReports() {
+		this.socket = await this.socket;
+
+		this.socket.emit('getUserReports');
+	}
+
+	async getSignups() {
+		this.socket = await this.socket;
+
+		this.socket.emit('getSignups');
+	}
+
+	async getAllSignups() {
+		this.socket = await this.socket;
+
+		this.socket.emit('getAllSignups');
+	}
+
+	async getModInfo(count) {
+		this.socket = await this.socket;
+
+		this.socket.emit('getModInfo', count);
+	}
+
+	async getPrivateSignups() {
+		this.socket = await this.socket;
+
+		this.socket.emit('getPrivateSignups');
+	}
+
+	async investigate(index) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectParyMembershipInvestigate', {
+			playerIndex: index,
+			uid: this.uid
+		});
+	}
+
+	async investigateReverse(index) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectParyMembershipInvestigateReverse', {
+			playerIndex: index,
+			uid: this.uid
+		});
 	}
 
 	async joinGame(uid, password) {
@@ -154,6 +309,51 @@ class SHBot {
 			uid: uid,
 			password
 		});
+	}
+
+	async leaveGame() {
+		this.socket = await this.socket;
+
+		this.socket.emit('leaveGame', {
+			uid: this.uid,
+			userName: this.username
+		});
+	}
+
+	async peekVotes() {
+		this.socket = await this.socket;
+
+		this.socket.emit('modPeekVotes', {
+			modName: this.username,
+			uid: this.uid
+		});
+	}
+
+	async playerReport(reportedPlayer, reason, gameType, comment) {
+		this.socket = await this.socket;
+
+		this.socket.emit({
+			gameUid: this.uid,
+			reportedPlayer: reportedPlayer,
+			reason: reason,
+			gameType: gameType,
+			comment: comment
+		});
+	}
+
+	async presidentVoteBurn(vote) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedPresidentVoteOnBurn', {
+			vote: vote,
+			uid: this.uid
+		});
+	}
+
+	async regatherAEMUsernames() {
+		this.socket = await this.socket;
+
+		this.socket.emit('regatherAEMUsernames');
 	}
 
 	async selectVote(vote) {
@@ -205,21 +405,61 @@ class SHBot {
 		});
 	}
 
-	async investigate(index) {
+	async selectPolicies() {
 		this.socket = await this.socket;
 
-		socket.emit('selectParyMembershipInvestigate', {
-			playerIndex: index,
+		this.socket.emit('selectedPolicies', {
 			uid: this.uid
 		});
 	}
 
-	async investigateReverse(index) {
+	async sendFlappyEvent(team, type) {
 		this.socket = await this.socket;
 
-		this.socket.emit('selectParyMembershipInvestigateReverse', {
-			playerIndex: index,
-			uid: this.uid
+		this.socket.emit('flappyEvent', {
+			team: team,
+			type: type
+		});
+	}
+
+	async sendHasSeenNewPlayerModal() {
+		this.socket = await this.socket;
+
+		this.socket.emit('hasSeenNewPlayerModal');
+	}
+
+	async sendModerationAction(username, isReportResolveChange, ip, action, comment, id) {
+		this.socket = await this.socket;
+
+		this.socket.emit({
+			userName: username,
+			isReportResolveChange: isReportResolveChange,
+			ip: ip,
+			action: action,
+			modName: this.username,
+			_id: id
+		});
+	}
+
+	async sendUpdatedPlayerNote(note, notedUser) {
+		this.socket = await this.socket;
+
+		this.socket.emit({
+			userName: this.username,
+			notedUser: notedUser,
+			note: note
+		});
+	}
+
+	async sendUpdatedTheme(primaryColor, secondaryColor, tertiaryColor, backgroundColor, textColor) {
+		this.socket = await this.socket;
+
+		this.socket.emit({
+			primaryColor: primaryColor,
+			secondaryColor: secondaryColor,
+			tertiaryColor: tertiaryColor,
+			backgroundColor: backgroundColor,
+			textColor: textColor
 		});
 	}
 
@@ -232,13 +472,40 @@ class SHBot {
 		});
 	}
 
-	async execute(index) {
+	async subscribeModChat() {
 		this.socket = await this.socket;
 
-		this.socket.emit('selectedPlayerToExecute', {
-			playerIndex: index,
+		this.socket.emit('subscribeModChat', uid);
+	}
+
+	async updateBio(data) {
+		this.socket = await this.socket;
+
+		this.socket.emit('updateBio', data);
+	}
+
+	async updateRemake() {
+		this.socket = await this.socket;
+
+		this.socket.emit('updateRemake', {
 			uid: this.uid
 		});
+	}
+
+	async updateSeatedUser() {
+		this.socket = await this.socket;
+
+		this.socket.emit('updateSeatedUser', {
+			uid: this.uid,
+			password: this.password
+		});
+	}
+
+
+	async updateUserStatus(type, uid) {
+		this.socket = await this.socket;
+
+		this.socket.emit('updateUserStatus', type, this.uid);
 	}
 
 	async voteVeto(vote) {
@@ -267,15 +534,6 @@ class SHBot {
 		this.socket = await this.socket;
 
 		this.socket.emit('selectedPresidentVoteOnVeto', {
-			vote: vote,
-			uid: this.uid
-		});
-	}
-
-	async presidentVoteBurn(vote) {
-		this.socket = await this.socket;
-
-		this.socket.emit('selectedPresidentVoteOnBurn', {
 			vote: vote,
 			uid: this.uid
 		});
