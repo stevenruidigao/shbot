@@ -21,7 +21,7 @@ class SHBot {
 			console.log('Socket connected.');
 			this.socket.emit('hasSeenNewPlayerModal');
 			this.socket.emit('updateUserStatus');
-			this.socket.emit('getUserGameSettings');
+			this.getUserGameSettings();
 			this.socket.emit('sendUser', {
 				userName: this.username,
 				verified: false,
@@ -54,8 +54,8 @@ class SHBot {
 		});
 
 		this.socket.on('joinGameRedirect', uid => {
-			console.log(uid);
-			this.socket.emit('updateUserStatus', '', this.game && this.game.general && this.game.general.uid);
+			console.log(this.username + ': ' + uid);
+			this.updateUserStatus('', uid);
 			this.uid = uid;
 		});
 
@@ -80,15 +80,16 @@ class SHBot {
 		});
 
 		this.socket.on('updateSeatForUser', () => {
-			
+			// Do something
 		});
 
 		this.socket.on('userList', list => {
 			if (Date() - this.lastReconnectAttempt > 5000) {
 				this.lastReconnectAttempt = now;
+
 				if (!list.list.map(user => this.username).includes(this.username)) {
 					console.log('Detected own user not in list, attempting to reconnect...');
-					this.socket.emit('getUserGameSettings');
+					this.getUserGameSettings();
 				}
 			}
 		});
@@ -131,6 +132,9 @@ class SHBot {
 			    disableChat, isVerifiedOnly, disableObserverLobby, disableObserver, disableGameChat, rainbowGame, blindMode, timedMode,
 			    flappyMode, flappyOnlyMode, casualGame, practiceGame, rebalance6p, rebalance7p, rebalance9p2f, unlistedGame, privatePassword) {
 		this.socket = await this.socket;
+
+		this.hasRemade = false;
+		this.isHost = true;
 		this.password = privatePassword;
 
 		console.log('Creating a game with name ' + gameName);
@@ -304,6 +308,9 @@ class SHBot {
 
 		this.uid = uid;
 		this.password = password;
+		this.hasRemade = false;
+
+		this.getGameInfo(uid);
 
 		this.socket.emit('updateSeatedUser', {
 			uid: uid,
@@ -354,15 +361,6 @@ class SHBot {
 		this.socket = await this.socket;
 
 		this.socket.emit('regatherAEMUsernames');
-	}
-
-	async selectVote(vote) {
-		this.socket = await this.socket;
-
-		this.socket.emit('selectedVoting', {
-			vote: vote,
-			uid: this.uid
-		});
 	}
 
 	async selectChancellor(index) {
@@ -484,10 +482,13 @@ class SHBot {
 		this.socket.emit('updateBio', data);
 	}
 
-	async updateRemake() {
+	async updateRemake(remakeStatus) {
 		this.socket = await this.socket;
 
+		this.hasRemade = remakeStatus;
+
 		this.socket.emit('updateRemake', {
+			remakeStatus: remakeStatus,
 			uid: this.uid
 		});
 	}
@@ -534,6 +535,15 @@ class SHBot {
 		this.socket = await this.socket;
 
 		this.socket.emit('selectedPresidentVoteOnVeto', {
+			vote: vote,
+			uid: this.uid
+		});
+	}
+
+	async vote(vote) {
+		this.socket = await this.socket;
+
+		this.socket.emit('selectedVoting', {
 			vote: vote,
 			uid: this.uid
 		});

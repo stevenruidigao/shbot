@@ -24,7 +24,6 @@ async function createBots(hostname, password) {
 	var bots = [host, bot2, bot3, bot4, bot5, bot6, bot7, bot8, bot9, bot10];
 
 	for (bot of bots) {
-
 		await bot.socket;
 
 		bot.socket.on('toLobby', () => {

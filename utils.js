@@ -30,7 +30,7 @@ module.exports.signin = async function (username, password, protocol, hostname, 
 		}
 	}
 
-	socket = await io(protocol + hostname + ':' + port, socketOptions);
+	socket = await io(protocol + hostname + port, socketOptions);
 	return socket;
 }
 
@@ -51,7 +51,7 @@ module.exports.getSID = async function (username, password, hostname, port) {
 		}
 	}
 	try {
-		var response = await utils.makeHTTPPOSTRequest(signinOptions, encodedData);
+		var response = await utils.makeHTTPSPOSTRequest(signinOptions, encodedData);
 		return response.headers['set-cookie'][0].split(';')[0];
 
 	} catch(e) {
@@ -69,7 +69,7 @@ module.exports.getOnlineUsers = async function (hostname, port) {
 	};
 
 	try {
-		var data = await utils.makeGETRequest(options);
+		var data = await utils.makeHTTPSGETRequest(options);
 		return data.data.count;
 
 	} catch(e) {
