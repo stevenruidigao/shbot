@@ -10,16 +10,16 @@ var logFile = fs.createWriteStream('log.log', {flags:'a'});
 createBots(config.hostname ? config.hostname : 'localhost', config.password);
 
 async function createBots(hostname, password) {
-	var host = new classes.SHBot('bot1', password, 'http://', hostname, '8080');
-	var bot2 = new classes.SHBot('bot2', password, 'http://', hostname, '8080');
-	var bot3 = new classes.SHBot('bot3', password, 'http://', hostname, '8080');
-	var bot4 = new classes.SHBot('bot4', password, 'http://', hostname, '8080');
-	var bot5 = new classes.SHBot('bot5', password, 'http://', hostname, '8080');
-	var bot6 = new classes.SHBot('bot6', password, 'http://', hostname, '8080');
-	var bot7 = new classes.SHBot('bot7', password, 'http://', hostname, '8080');
-	var bot8 = new classes.SHBot('bot8', password, 'http://', hostname, '8080');
-	var bot9 = new classes.SHBot('bot9', password, 'http://', hostname, '8080');
-	var bot10 = new classes.SHBot('bot10', password, 'http://', hostname, '8080');
+	var host = new classes.SHBot('bot1', password, 'https://', hostname, '');
+	var bot2 = new classes.SHBot('bot2', password, 'https://', hostname, '');
+	var bot3 = new classes.SHBot('bot3', password, 'https://', hostname, '');
+	var bot4 = new classes.SHBot('bot4', password, 'https://', hostname, '');
+	var bot5 = new classes.SHBot('bot5', password, 'https://', hostname, '');
+	var bot6 = new classes.SHBot('bot6', password, 'https://', hostname, '');
+	var bot7 = new classes.SHBot('bot7', password, 'https://', hostname, '');
+	var bot8 = new classes.SHBot('bot8', password, 'https://', hostname, '');
+	var bot9 = new classes.SHBot('bot9', password, 'https://', hostname, '');
+	var bot10 = new classes.SHBot('bot10', password, 'https://', hostname, '');
 
 	var bots = [host, bot2, bot3, bot4, bot5, bot6, bot7, bot8, bot9, bot10];
 
