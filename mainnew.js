@@ -7,7 +7,7 @@ const classes = require('./agent.js');
 var config = require('./config.json');
 var logFile = fs.createWriteStream('log.log', {flags:'a'});
 
-createBots(config.hostname, config.password);
+createBots(config.hostname ? config.hostname : 'localhost', config.password);
 
 async function createBots(hostname, password) {
 	var host = new classes.SHBot('bot1', password, 'https://', hostname, '');
